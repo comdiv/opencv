@@ -82,6 +82,22 @@ String::String(const std::string& str)
     }
 }
 
+#ifndef NO_WIDE_STRING_SUPPORT_5631
+#ifndef OPENCV_NOSTL
+inline
+String::String(const std::wstring& wstr)
+    : cstr_(0), len_(0)
+{
+    if (!wstr.empty())
+    {
+        std::string str(wstr.begin(), wstr.end());
+        size_t len = str.size();
+        memcpy(allocate(len), str.c_str(), len);
+    }
+}
+#endif
+#endif
+
 inline
 String::String(const std::string& str, size_t pos, size_t len)
     : cstr_(0), len_(0)

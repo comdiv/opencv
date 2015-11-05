@@ -570,6 +570,14 @@ public:
     friend String operator+ (const std::string& lhs, const String& rhs);
 #endif
 
+#ifndef NO_WIDE_STRING_SUPPORT_5631
+#ifndef OPENCV_NOSTL
+    // std::wstring and wchar_t* support for #5631 (https://github.com/Itseez/opencv/issues/5631)
+    String(const wchar_t* s);
+    String(const std::wstring& str);
+#endif
+#endif
+
 private:
     char*  cstr_;
     size_t len_;
@@ -624,6 +632,22 @@ String::String(const char* s)
     size_t len = strlen(s);
     memcpy(allocate(len), s, len);
 }
+
+#ifndef NO_WIDE_STRING_SUPPORT_5631
+#ifndef OPENCV_NOSTL
+inline
+String::String(const wchar_t* ws)
+    : cstr_(0), len_(0)
+{
+    if (!ws) return;
+    std::wstring wstr(ws);
+    std::string str(wstr.begin(), wstr.end());
+    const char* s = str.c_str();
+    size_t len = strlen(s);
+    memcpy(allocate(len), s, len);
+}
+#endif
+#endif
 
 inline
 String::String(const char* s, size_t n)
